@@ -22,10 +22,14 @@ const Navbar = () => {
                 <Link to="/images">Planetary</Link>
                 </li>
                 <li>
-                  <a href="http://localhost:5174/">Heliocentric system</a>
+                  <a href={`${window.location.protocol}//${window.location.hostname}:5174/`}>
+                        Heliocentric system
+                  </a>
                 </li>
                 <li>
-                  <a href="http://localhost:5175/">Chat</a>
+                  <a href={`${window.location.protocol}//${window.location.hostname}:5175/`}>
+                         Chat
+                  </a>
                 </li>
                 <li>
                   <Link to="/Spaces">Space Exploration History</Link>
