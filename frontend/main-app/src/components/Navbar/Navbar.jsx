@@ -25,7 +25,7 @@ const Navbar = () => {
                   <a href="http://localhost:5174/">Heliocentric system</a>
                 </li>
                 <li>
-                  <a href="/chat/">Chat</a>
+                  <a href="http://localhost:5175/">Chat</a>
                 </li>
                 <li>
                   <Link to="/Spaces">Space Exploration History</Link>
