@@ -1,6 +1,5 @@
 import React from "react";
 import MountainPng from "../../assets/moon-surface-hd.png";
-import { Link } from "react-router-dom";
 
 const Hero = () => {
   return (
@@ -8,6 +7,7 @@ const Hero = () => {
       <div className="h-full flex justify-center items-center p-4">
         <div className="container grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="text-white space-y-4 lg:pr-36">
+
             <h1 data-aos="fade-up" className="text-4xl font-bold">
               Journey Through The Universe
             </h1>
@@ -19,7 +19,7 @@ const Hero = () => {
               witness its beauty and complexity like never before.
             </p>
 
-            <Link to="https://cdn.pannellum.org/2.5/pannellum.htm#panorama=https://pannellum.org/images/alma.jpg">
+            <a href="https://cdn.pannellum.org/2.5/pannellum.htm#panorama=https://pannellum.org/images/alma.jpg">
               <button
                 data-aos="fade-up"
                 data-aos-delay="500"
@@ -27,13 +27,9 @@ const Hero = () => {
               >
                 Experience with AR
               </button>
-            </Link>
+            </a>
 
-            <a
-              href="http://localhost:5174"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+            <a href="http://localhost:5174/">
               <button
                 data-aos="fade-up"
                 data-aos-delay="500"
@@ -42,6 +38,7 @@ const Hero = () => {
                 Travel b/w Orbitals
               </button>
             </a>
+
           </div>
 
           <div></div>
