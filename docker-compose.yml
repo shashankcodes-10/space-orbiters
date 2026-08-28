@@ -1,0 +1,81 @@
+services:
+  postgres:
+     container_name: postgres
+     image: postgres:16-alpine
+     networks: 
+      - space-orbiters
+     volumes:
+      - space-vol:/var/lib/postgresql/data
+      - ./init:/docker-entrypoint-initdb.d:ro
+     ports:
+      - "${POSTGRES_PORT}:5432" 
+     environment:
+       POSTGRES_DB: ${POSTGRES_DB}
+       POSTGRES_USER: ${POSTGRES_USER}
+       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+     healthcheck:  
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  backend:
+     container_name: backend
+     build:
+       context: ./backend
+       dockerfile: Dockerfile.multistage
+     environment:
+        POSTGRES_DB: ${POSTGRES_DB}
+        POSTGRES_URL: "postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?sslmode=disable"
+     networks:
+      - space-orbiters
+     ports:
+      - "3000:3000" 
+     depends_on:
+       postgres:
+        condition: service_healthy
+
+  chatroom:
+    container_name: chatroom
+    build:
+      context: ./frontend/chatroom
+      dockerfile: Dockerfile.multistage
+    networks:
+     - space-orbiters
+    ports:
+     - "5175:80"
+    depends_on:
+     - backend 
+
+
+  solar-system:
+    container_name: solar-system
+    build:
+      context: ./frontend/solar-system
+      dockerfile: Dockerfile.multistage
+    networks:
+     - space-orbiters
+    ports:
+     - "5174:80"
+    depends_on:
+     - backend    
+
+  main-app:
+    container_name: main-app
+    build:
+      context: ./frontend/main-app
+      dockerfile: Dockerfile.multistage
+    networks:
+     - space-orbiters
+    ports:
+     - "5173:80"
+    depends_on:
+     - backend    
+
+
+networks:
+   space-orbiters:
+
+volumes:
+   space-vol:        
