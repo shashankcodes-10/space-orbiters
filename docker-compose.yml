@@ -22,9 +22,7 @@ services:
 
   backend:
      container_name: backend
-     build:
-       context: ./backend
-       dockerfile: Dockerfile.multistage
+     image: shashank971/space-orbiters-backend
      environment:
         POSTGRES_DB: ${POSTGRES_DB}
         POSTGRES_URL: "postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?sslmode=disable"
@@ -38,9 +36,7 @@ services:
 
   chatroom:
     container_name: chatroom
-    build:
-      context: ./frontend/chatroom
-      dockerfile: Dockerfile.multistage
+    image: shashank971/space-orbiters-chatroom
     networks:
      - space-orbiters
     ports:
@@ -51,9 +47,7 @@ services:
 
   solar-system:
     container_name: solar-system
-    build:
-      context: ./frontend/solar-system
-      dockerfile: Dockerfile.multistage
+    image: shashank971/space-orbiters-solar-system
     networks:
      - space-orbiters
     ports:
@@ -63,9 +57,7 @@ services:
 
   main-app:
     container_name: main-app
-    build:
-      context: ./frontend/main-app
-      dockerfile: Dockerfile.multistage
+    image: shashank971/space-orbiters-main-app
     networks:
      - space-orbiters
     ports:
