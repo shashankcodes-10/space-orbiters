@@ -1,21 +1,26 @@
 # Space Orbiters
 
 > **Original Project:** https://github.com/saswat2004/SPACE_ORBITERS
+> **Live:** https://space.shashankpipal.in/
 
 Space Orbiters is a space-exploration project with React frontends, a Node.js/Express backend, Socket.IO real-time chat, and PostgreSQL persistence.
 
 This repository is based on the original **SPACE_ORBITERS** project above and has been restructured, fixed, and containerized to make the application easier to run, deploy, and maintain.
 
-## Latest Changes — EC2 & DNS-Ready Deployment
+## Latest Changes — Live on EC2 with HTTPS
 
-The deployment setup was recently reworked to go live behind a real domain on EC2 without exposing multiple ports:
+The application is now deployed and live behind a real domain with HTTPS:
 
-- **Reverse proxy added (`nginx-proxy`)** — a single Nginx container is now the only thing exposed to the internet (port `80`). It routes by path: `/` → `main-app`, `/solar` → `solar-system`, `/chat` → `chatroom`, `/api` & `/socket.io` → `backend`. Full details in [Reverse Proxy & Path-Based Routing](#reverse-proxy--path-based-routing).
+- **Live at `https://space.shashankpipal.in/`** — Main App at `/`, Solar System at `/solar/`, Chatroom at `/chat/`.
+- **Reverse proxy added (`nginx-proxy`)** — a single Nginx container is now the only thing exposed to the internet. It routes by path: `/` → `main-app`, `/solar` → `solar-system`, `/chat` → `chatroom`, `/api` & `/socket.io` → `backend`.
 - **No more per-app ports** — `main-app`, `solar-system`, and `chatroom` used to be published on host ports `5173`/`5174`/`5175`. They're now internal-only (`expose: 80`), reachable exclusively through `nginx-proxy`.
-- **EC2 Security Group simplified** — only **SSH (22)** and **HTTP (80)** need to be open now; the old rules for 5173/5174/5175 can be removed. See [EC2 Deployment](#ec2-deployment).
-- **DNS-ready** — once an Elastic IP is attached and a DNS A record points at it, the app is reachable at `http://yourdomain.com/` with no port number needed. See [DNS & Domain Setup](#dns--domain-setup).
-- **Builds locally instead of pulling from Docker Hub** — `docker-compose.yml` now builds all four app images directly from their `Dockerfile.multistage` files via `docker compose up -d --build`, so deployment only needs the repo + Docker on the instance. See [Local Multi-Stage Builds](#9-local-multi-stage-builds-no-docker-hub-pull-required).
-- **`main-app` assets compressed** — the `assets/` folder dropped from 89 MB to 9.4 MB (video re-encoded, images converted to WebP, GIF converted to video) for faster page loads. See [Frontend Asset Optimization](#11-frontend-asset-optimization).
+- **DNS configured** — `space.shashankpipal.in` points at the EC2 instance's Elastic IP via a DNS A record.
+- **HTTPS enabled** — a Let's Encrypt SSL/TLS certificate was generated using Certbot and configured in the Nginx reverse proxy.
+- **HTTP → HTTPS redirect** — plain HTTP requests to port 80 are automatically redirected to HTTPS on port 443.
+- **SSL certificate renewal support** — the Certbot webroot is preserved in the Nginx configuration so certificates can be renewed without downtime.
+- **EC2 deployment** — the application runs on an AWS EC2 instance using Docker Compose.
+- **Local multi-stage builds** — application images are built directly from their `Dockerfile.multistage` files instead of requiring Docker Hub pulls.
+- **Frontend asset optimization** — the `main-app` assets folder was reduced from approximately 89 MB to 9.4 MB.
 
 ## Architecture
 
@@ -23,8 +28,8 @@ The deployment setup was recently reworked to go live behind a real domain on EC
 React main app ───────┐
                       │
 React solar system ───┼─── nginx-proxy ───> Node.js + Express + Socket.IO
-                      │      (path-based        │
-Chat browser ─────────┘       routing)          │ SQL
+                      │      (HTTPS,             │
+Chat browser ─────────┘    path-based routing)   │ SQL
                                                  ▼
                                             PostgreSQL
 ```
@@ -53,7 +58,7 @@ SPACE_ORBITERS/
 │   └── 02-seed.sql            # PostgreSQL seed data
 │
 ├── nginx-proxy/
-│   └── default.conf           # Reverse proxy: path-based routing to all services
+│   └── default.conf           # Reverse proxy: HTTPS + path-based routing to all services
 │
 ├── docker-compose.yml
 └── README.md
@@ -61,11 +66,11 @@ SPACE_ORBITERS/
 
 ## System Design — Full Project on EC2 with DevSecOps
 
-The application runs as a single Docker Compose stack on one AWS EC2 (Ubuntu) instance, sitting behind an **Nginx reverse proxy** that is the only container exposed to the internet. The EC2 Security Group only needs two inbound rules: **SSH (22)** and **HTTP (80)** — no more per-frontend ports.
+The application runs as a single Docker Compose stack on one AWS EC2 (Ubuntu) instance, sitting behind an **Nginx reverse proxy** that is the only container exposed to the internet. The EC2 Security Group needs three inbound rules: **SSH (22)**, **HTTP (80)**, and **HTTPS (443)** — no more per-frontend ports.
 
 ![Space Orbiters AWS deployment architecture](docs/aws-deployment-architecture.png)
 
-**Edge tier** — `nginx-proxy` (host port `80` → container port `80`) is the single public entry point. It routes requests by path to the correct frontend and forwards `/api/` and `/socket.io/` to the backend. See [Reverse Proxy & Path-Based Routing](#reverse-proxy--path-based-routing) below.
+**Edge tier** — `nginx-proxy` (host ports `80`/`443` → container ports `80`/`443`) is the single public entry point. It terminates TLS using the Let's Encrypt certificate, redirects HTTP → HTTPS, routes requests by path to the correct frontend, and forwards `/api/` and `/socket.io/` to the backend.
 
 **Presentation tier** — `main-app`, `solar-system`, and `chatroom`, each served by their own Nginx inside the container. These containers are **not** published to the host anymore (`expose: 80` only) — they're reachable exclusively through `nginx-proxy` over the internal Docker network.
 
@@ -73,27 +78,27 @@ The application runs as a single Docker Compose stack on one AWS EC2 (Ubuntu) in
 
 **Data tier** — PostgreSQL 16 (Alpine) on port 5432, also internal-only, reachable via `postgres:5432`, with data persisted on the `space-vol` volume mounted at `/var/lib/postgresql/data` so it survives container restarts.
 
-All containers communicate over the `space-orbiters` Docker network by service name rather than by public IP. All application images (`backend`, `main-app`, `solar-system`, `chatroom`) are now **built directly on the EC2 instance** from each service's `Dockerfile.multistage` via `docker compose up --build`, rather than pulled from Docker Hub — see [Run With Docker Compose](#run-with-docker-compose).
+All containers communicate over the `space-orbiters` Docker network by service name rather than by public IP. All application images (`backend`, `main-app`, `solar-system`, `chatroom`) are now **built directly on the EC2 instance** from each service's `Dockerfile.multistage` via `docker compose up --build`, rather than pulled from Docker Hub.
 
-The diagram also shows the target Jenkins CI/CD pipeline (GitHub → Jenkins → Build & Test → SonarQube → OWASP Dependency Check → Trivy scans → Docker Hub → EC2 deployment) — as noted in [DevSecOps](#devsecops) below, this pipeline is planned and not yet implemented; the EC2/Docker Compose deployment portion above is what's currently in place.
+The diagram also shows the target Jenkins CI/CD pipeline (GitHub → Jenkins → Build & Test → SonarQube → OWASP Dependency Check → Trivy scans → Docker Hub → EC2 deployment) — as noted in [DevSecOps](#devsecops) below, this pipeline is planned and not yet implemented; the EC2/Docker Compose deployment portion above is what's currently live.
 
 ## Application Preview
 
-The three frontend applications, all served through one domain via the reverse proxy:
+The three frontend applications, all served through one domain over HTTPS via the reverse proxy:
 
-#### Main App — `http://yourdomain.com/`
+#### Main App — https://space.shashankpipal.in/
 
 ![Main App homepage](docs/main-app-home.png)
 
-#### Solar System — `http://yourdomain.com/solar`
+#### Solar System — https://space.shashankpipal.in/solar/
 
 ![Solar System dashboard](docs/solar-system-dashboard.png)
 
-#### Chatroom — `http://yourdomain.com/chat`
+#### Chatroom — https://space.shashankpipal.in/chat/
 
 ![Chatroom app](docs/chatroom-app.png)
 
-> **Note:** locally (before DNS is set up), replace `yourdomain.com` with `localhost` — e.g. `http://localhost/solar`. No port number is needed; `nginx-proxy` listens on the default HTTP port 80.
+> **Note:** running locally (without the domain/HTTPS), the same routing is available at `http://localhost/`, `http://localhost/solar`, and `http://localhost/chat` — no port number is needed since `nginx-proxy` listens on the default HTTP port 80.
 
 ## Improvements and Contributions
 
@@ -258,7 +263,7 @@ nginx-proxy
 Only `nginx-proxy` is published to the host — all frontend and backend traffic is routed through it:
 
 ```text
-nginx-proxy   → 80 (public)
+nginx-proxy   → 80, 443 (public)
 main-app      → internal only (expose: 80)
 solar-system  → internal only (expose: 80)
 chatroom      → internal only (expose: 80)
@@ -322,15 +327,20 @@ Deployment therefore only requires the repository itself on the EC2 instance —
 
 An `nginx-proxy` service was added as the single public entry point, replacing the old setup where each frontend published its own host port (`5173`/`5174`/`5175`).
 
-`nginx-proxy/default.conf` routes by path:
+`nginx-proxy` handles:
 
 ```text
-/            → main-app
-/solar/      → solar-system
-/chat/       → chatroom
-/api/        → backend
-/socket.io/  → backend (WebSocket upgrade)
+Port 80   → redirects all HTTP traffic to HTTPS
+Port 443  → terminates TLS (Let's Encrypt certificate), then routes by path:
+
+  /            → main-app
+  /solar/      → solar-system
+  /chat/       → chatroom
+  /api/        → backend
+  /socket.io/  → backend (WebSocket upgrade)
 ```
+
+The Certbot webroot used for issuing/renewing the certificate is preserved in the Nginx configuration so `certbot renew` can run without taking the site down.
 
 To support being served from a subpath, `solar-system` was configured with:
 
@@ -338,8 +348,6 @@ To support being served from a subpath, `solar-system` was configured with:
 - `main.jsx` → `<BrowserRouter basename="/solar">`, so client-side route navigation (e.g. `/profile`) resolves as `/solar/profile`.
 
 `chatroom` required no changes since it already uses relative asset paths.
-
-This means only port `80` (and `443`, once TLS is added) needs to be open on the EC2 instance — see [DNS & Domain Setup](#dns--domain-setup) below.
 
 ### 11. Frontend Asset Optimization
 
@@ -422,12 +430,20 @@ Check the running services:
 docker compose ps
 ```
 
-The application is available at:
+Locally, the application is available at:
 
 ```text
 http://localhost/          → Main App
 http://localhost/solar     → Solar System
 http://localhost/chat      → Chatroom
+```
+
+In production, it's available at:
+
+```text
+https://space.shashankpipal.in/          → Main App
+https://space.shashankpipal.in/solar/    → Solar System
+https://space.shashankpipal.in/chat/     → Chatroom
 ```
 
 To rebuild just one service after a code change (instead of the whole stack):
@@ -440,12 +456,13 @@ docker compose up -d --build main-app
 
 1. **Launch an EC2 instance** (Ubuntu, free-tier eligible `t3.micro`/`t4g.micro` is enough to start).
 
-2. **Security Group inbound rules** — only two are needed now:
+2. **Security Group inbound rules:**
 
    | Type | Port | Source |
    |---|---|---|
    | SSH | 22 | Your IP (or `0.0.0.0/0` if you need remote access from anywhere) |
    | HTTP | 80 | `0.0.0.0/0` |
+   | HTTPS | 443 | `0.0.0.0/0` |
 
    The old rules for 5173/5174/5175 are no longer needed — remove them if present, since `nginx-proxy` is now the only exposed service.
 
@@ -467,26 +484,22 @@ docker compose up -d --build main-app
    docker compose up -d --build
 ```
 
-6. **Verify it's reachable** by visiting `http://<your-ec2-public-ip>/` in a browser — you should see the Main App without typing any port number.
+6. **Verify it's reachable** by visiting `http://<your-ec2-public-ip>/` in a browser before DNS/HTTPS is set up — you should see the Main App without typing any port number.
 
 ## DNS & Domain Setup
 
-Once the app is reachable at `http://<ec2-public-ip>/`, point a domain at it so people can use `http://yourdomain.com/` instead of the raw IP.
+The application is live at **`https://space.shashankpipal.in/`**, set up as follows:
 
-1. **Get (or reserve) a static public IP.** EC2's default public IP changes if the instance restarts. Allocate an **Elastic IP** in the EC2 console and associate it with your instance — this keeps the IP fixed. (Note: Elastic IPs are **not free** — AWS charges ~$0.005/hr for any allocated public IPv4 address, attached or not, so release it if you stop using the instance.)
+1. **Elastic IP** — a static public IP was allocated in the EC2 console and associated with the instance, so the IP doesn't change on restart. (Note: Elastic IPs are **not free** — AWS charges ~$0.005/hr for any allocated public IPv4 address, attached or not.)
 
-2. **Add a DNS A record** with your domain registrar / DNS provider (Route 53, GoDaddy, Namecheap, Cloudflare, etc.):
+2. **DNS A record** — an A record for `space.shashankpipal.in` points at the Elastic IP, configured with the domain's DNS provider.
 
-   | Type | Name | Value |
-   |---|---|---|
-   | A | `@` (or `yourdomain.com`) | `<your Elastic IP>` |
-   | A | `www` (optional) | `<your Elastic IP>` |
+3. **HTTPS via Certbot / Let's Encrypt** — after DNS propagated, Certbot was run against `nginx-proxy` to issue a free SSL/TLS certificate for `space.shashankpipal.in`, and the Nginx config was updated to:
+   - Serve HTTPS on port `443` using the certificate.
+   - Redirect all plain HTTP (port `80`) requests to HTTPS.
+   - Preserve the Certbot webroot path so the certificate can be renewed in place (Let's Encrypt certificates expire every 90 days — a renewal, e.g. via `certbot renew` on a cron/systemd timer, keeps it valid).
 
-3. **Wait for DNS propagation** (usually a few minutes, can take up to ~48 hours depending on your provider's TTL).
-
-4. **Test it** — `http://yourdomain.com/` should now load the Main App, `http://yourdomain.com/solar` the Solar System app, and `http://yourdomain.com/chat` the Chatroom, all without any port number, since `nginx-proxy` is bound to the default HTTP port 80.
-
-5. **(Optional) Add HTTPS.** For production use, put [Certbot](https://certbot.eff.org/) (Let's Encrypt) in front of `nginx-proxy`, or terminate TLS at an AWS Application Load Balancer / CloudFront distribution pointed at the instance. This isn't set up yet in this repo — it's a natural next step once the domain is live on plain HTTP.
+4. **Result** — `https://space.shashankpipal.in/`, `/solar/`, and `/chat/` are all reachable directly, with no port number and a valid HTTPS padlock in the browser.
 
 ## Data Flow
 
@@ -567,6 +580,7 @@ External NASA/space resources used by the existing UI remain external resources.
 - Docker
 - Docker Compose (local multi-stage builds)
 - Nginx (frontend serving + reverse proxy / path-based routing)
+- Let's Encrypt / Certbot (HTTPS)
 - AWS EC2
 - AWS Elastic IP + DNS A record
 
@@ -576,38 +590,40 @@ External NASA/space resources used by the existing UI remain external resources.
                           Internet
                               │
                         DNS A record
-                       (yourdomain.com)
+                    (space.shashankpipal.in)
                               │
-                            :80
-                              │
-                              ▼
-                       ┌─────────────┐
-                       │ nginx-proxy │
-                       │  (public)   │
-                       └──────┬──────┘
-              ┌───────────────┼───────────────┬──────────────┐
-              │ /              │ /solar         │ /chat        │ /api, /socket.io
-              ▼               ▼                ▼              │
-        ┌─────────┐     ┌─────────┐     ┌──────────┐          │
-        │ Main App│     │  Solar  │     │ Chatroom │          │
-        │  Nginx  │     │  Nginx  │     │  Nginx   │          │
-        │(internal)│    │(internal)│    │(internal)│          │
-        └────┬────┘     └────┬────┘     └────┬─────┘          │
-             │               │               │                │
-             └───────────────┴───────────────┴────────────────┘
-                                     │
-                                     ▼
-                              ┌─────────────┐
-                              │   Backend   │
-                              │ Node + API  │
-                              │    :3000    │
-                              └──────┬──────┘
-                                     │
-                                 PostgreSQL
-                                    :5432
-                                     │
-                                     ▼
-                                space-vol
+                        :80        :443
+                              │      │
+                              ▼      ▼
+                       ┌─────────────────┐
+                       │   nginx-proxy   │
+                       │ (public, HTTPS) │
+                       │  80 → redirect  │
+                       │  443 → TLS term │
+                       └────────┬────────┘
+              ┌──────────────────┼──────────────────┬───────────────┐
+              │ /                │ /solar            │ /chat         │ /api, /socket.io
+              ▼                  ▼                   ▼               │
+        ┌─────────┐        ┌─────────┐         ┌──────────┐          │
+        │ Main App│        │  Solar  │         │ Chatroom │          │
+        │  Nginx  │        │  Nginx  │         │  Nginx   │          │
+        │(internal)│       │(internal)│        │(internal)│          │
+        └────┬────┘        └────┬────┘         └────┬─────┘          │
+             │                  │                    │                │
+             └──────────────────┴────────────────────┴────────────────┘
+                                        │
+                                        ▼
+                                 ┌─────────────┐
+                                 │   Backend   │
+                                 │ Node + API  │
+                                 │    :3000    │
+                                 └──────┬──────┘
+                                        │
+                                    PostgreSQL
+                                       :5432
+                                        │
+                                        ▼
+                                   space-vol
 ```
 
 All containers run on the Docker network:
@@ -616,7 +632,7 @@ All containers run on the Docker network:
 space-orbiters
 ```
 
-`nginx-proxy` is the only container with a published host port (`80`). Every other service uses `expose` and is reachable solely over the internal Docker network.
+`nginx-proxy` is the only container with published host ports (`80`, `443`). Every other service uses `expose` and is reachable solely over the internal Docker network.
 
 ## DevSecOps
 
