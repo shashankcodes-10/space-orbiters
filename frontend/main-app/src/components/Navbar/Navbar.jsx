@@ -1,6 +1,6 @@
 import React from "react";
 import Logo from "../../assets/logo.webp";
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
 // import Spaces from "../Spaces";
 
 const Navbar = () => {
@@ -16,37 +16,48 @@ const Navbar = () => {
               <img src={Logo} alt="" className="w-20" />
               <span>Space Orbiters</span>
             </div>
+
             <div className="text-white hidden sm:block ">
-              <ul className="flex items-center gap-5 text-xl py-2  ">
+              <ul className="flex items-center gap-5 text-xl py-2">
                 <li>
-                <Link to="/images">Planetary</Link>
+                  <Link to="/images">Planetary</Link>
                 </li>
+
                 <li>
-                  <a href={`${window.location.protocol}//${window.location.hostname}:5174/`}>
-                        Heliocentric system
+                  <a href="/solar/">
+                    Heliocentric system
                   </a>
                 </li>
+
                 <li>
-                  <a href={`${window.location.protocol}//${window.location.hostname}:5175/`}>
-                         Chat
+                  <a href="/chat/">
+                    Chat
                   </a>
                 </li>
+
                 <li>
                   <Link to="/Spaces">Space Exploration History</Link>
                 </li>
+
                 <li>
                   <Link to="/Satellite">Satellite</Link>
                 </li>
+
                 <li>
                   <Link to="/MainBodies">Celestial Bodies</Link>
                 </li>
               </ul>
             </div>
+
             <div>
-              <a href="https://chat.openai.com/g/g-U6pmqv8AC-cosmoquest" target="_blank" rel="noreferrer">
-              <button className=" text-white border-2 border-white px-3 httpspy-1 rounded-md">
-                MyBuddy
-              </button>
+              <a
+                href="https://chat.openai.com/g/g-U6pmqv8AC-cosmoquest"
+                target="_blank"
+                rel="noreferrer"
+              >
+                <button className="text-white border-2 border-white px-3 httpspy-1 rounded-md">
+                  MyBuddy
+                </button>
               </a>
             </div>
           </div>
