@@ -45,6 +45,21 @@ SPACE_ORBITERS/
 └── README.md
 ```
 
+## System Design — Full Project on EC2 with DevSecOps
+
+The application is designed to run as a 3-tier Docker Compose stack on a single AWS EC2 (Ubuntu) instance, secured behind an AWS Security Group with inbound rules limited to SSH (22), HTTP (80), and the three frontend ports (5173, 5174, 5175).
+
+![Space Orbiters AWS deployment architecture](docs/aws-deployment-architecture.png)
+
+**Presentation tier** — `main-app`, `solar-system`, and `chatroom`, each served by Nginx (host ports 5173/5174/5175 → container port 80).
+
+**Application tier** — the Node.js/Express + Socket.IO backend on port 3000, reachable only inside the Docker network via the service name `backend:3000` — never exposed with a public IP.
+
+**Data tier** — PostgreSQL 16 (Alpine) on port 5432, also internal-only, reachable via `postgres:5432`, with data persisted on the `space-vol` volume mounted at `/var/lib/postgresql/data` so it survives container restarts.
+
+All containers communicate over the `space-orbiters` Docker network by service name rather than by public IP, and the prebuilt application images are pulled from Docker Hub rather than built on the EC2 instance itself.
+
+The diagram also shows the target Jenkins CI/CD pipeline (GitHub → Jenkins → Build & Test → SonarQube → OWASP Dependency Check → Trivy scans → Docker Hub → EC2 deployment) — as noted in [DevSecOps](#devsecops) below, this pipeline is planned and not yet implemented; the EC2/Docker Compose deployment portion above is what's currently in place.
 The frontend applications are served through Nginx in their production Docker images.
 
 ## Application Preview
