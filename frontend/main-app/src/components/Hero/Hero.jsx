@@ -29,7 +29,7 @@ const Hero = () => {
               </button>
             </a>
 
-            <a href={`${window.location.protocol}//${window.location.hostname}:5174/`}>
+            <a href="/solar/">
               <button
                 data-aos="fade-up"
                 data-aos-delay="500"
