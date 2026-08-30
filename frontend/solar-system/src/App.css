@@ -1,0 +1,8 @@
+@import url("https://fonts.googleapis.com/css2?family=Nunito&display=swap");
+
+#root {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-image: url("/textures/stars_milky_way.jpeg");
+}
