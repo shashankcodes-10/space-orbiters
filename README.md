@@ -467,30 +467,53 @@ space-orbiters
 
 ## DevSecOps
 
-A Jenkins-based DevSecOps pipeline is planned for this project.
+A Jenkins-based DevSecOps CI/CD pipeline has been added to this project (`Jenkinsfile` at the repo root).
 
-The planned pipeline will include:
+> ⚠️ **Not final yet.** The pipeline has been validated for syntax and stage logic offline, but has not yet had a full successful run against a real Jenkins instance. Some stage names, tool names, or credential IDs may still need adjustment once it's actually run — treat it as a work in progress rather than a finished, battle-tested pipeline.
+
+### Shared Library
+
+Rather than duplicating pipeline logic, the `Jenkinsfile` reuses steps from a separate, already-configured Jenkins shared library:
 
 ```text
-GitHub
-   ↓
-Jenkins
+https://github.com/shashankcodes-10/jenkins-shared-library.git
+```
+
+This library is registered in Jenkins under **Manage Jenkins → System → Global Pipeline Libraries** with the name `shared`, and is pulled in via:
+
+```groovy
+@Library('shared') _
+```
+
+at the top of the `Jenkinsfile`. It provides reusable steps for cloning, SonarQube analysis and quality gating, OWASP dependency checking, Trivy filesystem/image scanning, Docker image builds, Docker Hub pushes, deployment, and build-status email notifications — so the `Jenkinsfile` itself stays focused on orchestrating *this* project's stages rather than re-implementing each tool integration from scratch.
+
+### Pipeline Stages
+
+```text
+Clone Repository
    ↓
 SonarQube Analysis
    ↓
-SonarQube Quality Gate
+Quality Gate
    ↓
 OWASP Dependency Check
    ↓
 Trivy Filesystem Scan
    ↓
-Docker Image Build
+Build Docker Images (backend, main-app, solar-system, chatroom)
    ↓
-Trivy Image Scan
+Trivy Image Scan (per image)
    ↓
-Docker Hub
+Push to Docker Hub (per image)
    ↓
-EC2 Deployment
+Deploy (docker compose up -d --build)
 ```
 
-> Jenkins CI/CD integration is planned and will be added separately.
+Build status notifications (success/failure) are sent via the shared library's email step, and scan reports (Trivy filesystem/image, OWASP dependency-check) are archived as Jenkins build artifacts.
+
+### Notes / Known Caveats
+
+- The four application images are built directly from each service's `Dockerfile.multistage` (not the plain `Dockerfile`), using `--platform linux/amd64` to ensure amd64-compatible images regardless of the Jenkins agent's own architecture (e.g. when building from an Apple Silicon machine).
+- The final `Deploy` stage runs `docker compose up -d --build` directly on the Jenkins agent — this assumes the agent itself has Docker access to the intended deployment target. If Jenkins runs somewhere other than the EC2 deployment host, this stage will need to be changed to deploy remotely (e.g. via SSH) instead.
+- Jenkins tool names referenced in the pipeline (`jdk17` for the JDK, `sonar-scanner` for the SonarQube Scanner, `DP-Check` for OWASP Dependency-Check) and the `docker-hub-credentials` credential ID must be configured in Jenkins under **Manage Jenkins → Tools** / **Credentials** with matching names for the pipeline to run.
+> Jenkins CI/CD integration is added and being tested; refinements are expected as it's run for real.
