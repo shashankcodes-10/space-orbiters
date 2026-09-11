@@ -29,3 +29,8 @@ jobs:
     needs: [code_quality,secret_scanning,dependency_check,docker_scan,sonar_scan,code_test]
     uses:  ./.github/workflows/docker_push.yml     
     secrets: inherit
+
+  deploy:
+    needs: [docker_push]
+    uses:  ./.github/workflows/deploy.yml     
+    secrets: inherit   
