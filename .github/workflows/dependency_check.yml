@@ -1,0 +1,32 @@
+name: DEPENDENCY SCAN
+
+on:
+  workflow_call:
+
+jobs:
+  dependency_scan:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        folders: [frontend/main-app,frontend/solar-system,backend]
+    steps:
+
+      - name: code Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: ${{ matrix.folders}}/package.json
+
+      - name: Install dependencies
+        run: npm install
+        working-directory: ${{ matrix.folders}}
+
+      - name: Run npm audit
+        run: npm audit 
+        working-directory: ${{ matrix.folders}}
+
