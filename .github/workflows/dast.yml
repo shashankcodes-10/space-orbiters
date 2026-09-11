@@ -1,0 +1,23 @@
+name: dast
+
+on:
+  workflow_call:
+
+jobs:
+  OWASP_ZAP_DAST_Scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Code Checkout
+        uses: actions/checkout@v7
+
+      - name: Wait for services to be healthy
+        run: |
+          timeout 60s sh -c 'until curl -s ${{ secrets.EC2_HOST }}:5173 > /dev/null; do sleep 2; done'
+
+      - name: OWASP ZAP Baseline Scan
+        uses: zaproxy/action-baseline@v0.14.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          target: '${{ secrets.EC2_HOST }}:5173'
+          fail_action: false
+          allow_issue_writing: false
