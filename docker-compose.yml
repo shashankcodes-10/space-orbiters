@@ -22,7 +22,7 @@ services:
 
   backend:
      container_name: backend
-     image: shashank971/space-orbiters-backend-Actions:latest
+     image: shashank971/space-orbiters-backend-actions:latest
      environment:
         POSTGRES_DB: ${POSTGRES_DB}
         POSTGRES_URL: "postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?sslmode=disable"
@@ -36,7 +36,7 @@ services:
 
   chatroom:
     container_name: chatroom
-    image: shashank971/space-orbiters-chatroom-Actions
+    image: shashank971/space-orbiters-chatroom-actions
     networks:
      - space-orbiters
     ports:
@@ -47,7 +47,7 @@ services:
 
   solar-system:
     container_name: solar-system
-    image: shashank971/space-orbiters-solar-system-Actions:latest
+    image: shashank971/space-orbiters-solar-system-actions:latest
     networks:
      - space-orbiters
     ports:
@@ -57,7 +57,7 @@ services:
 
   main-app:
     container_name: main-app
-    image: shashank971/space-orbiters-main-app-Actions:latest
+    image: shashank971/space-orbiters-main-app-actions:latest
     networks:
      - space-orbiters
     ports:
