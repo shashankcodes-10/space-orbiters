@@ -17,3 +17,6 @@ jobs:
   docker_scan:
     uses:  ./.github/workflows/docker_scan.yml   
     secrets: inherit
+
+  code_test:
+    uses:  ./.github/workflows/code_test.yml   

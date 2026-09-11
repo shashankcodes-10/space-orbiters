@@ -1,0 +1,30 @@
+name: CODE TEST
+
+on:
+  workflow_call:
+
+jobs:
+  code_test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        folders: [frontend/main-app,frontend/solar-system,backend]
+    steps:
+    - name: code checkout
+      uses: actions/checkout@v7
+
+    - name: node setup
+      uses: actions/setup-node@v7
+      with:
+        node-version: '24'
+        cache: npm
+        cache-dependency-path: ${{ matrix.folders }}/package-lock.json
+
+    - name: installing dependency
+      run: npm install
+      working-directory:  ${{ matrix.folders }}
+
+    - name: linting      
+      run: npm run test:run
+      working-directory: ${{ matrix.folders }}
