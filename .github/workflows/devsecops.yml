@@ -7,3 +7,7 @@ on:
 jobs:
   docker_push:
     uses: ./.github/workflows/code_quality.yml
+
+  secret_scanning:
+    uses:  ./.github/workflows/secret_scanning.yml
+  
