@@ -1,0 +1,42 @@
+name: DOCKER SCAN 
+
+on:
+  workflow_call:
+
+jobs:
+  docker_scan:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        folders: [frontend/main-app,frontend/solar-system,frontend/chatroom,backend] 
+    steps:
+      - name: code checkout
+        uses: actions/checkout@v7
+
+      - name: hadolint     
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: ${{ matrix.folders}}/Dockerfile    
+
+      - name: docker login
+        uses: docker/login-action@v4
+        with:
+          username: ${{ vars.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}     
+  
+      - name: docker image build
+        run: docker build -t devboard-${{ matrix.folders}}:latest  .
+        working-directory: ${{ matrix.folders}}
+      
+      - name: Run Trivy vulnerability scanner        
+        uses: aquasecurity/trivy-action@v0.36.0  
+        continue-on-error: true
+        with:
+          image-ref: 'devboard-${{ matrix.folders}}:latest'
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+
