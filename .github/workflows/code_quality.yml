@@ -26,5 +26,5 @@ jobs:
       working-directory:  ${{ matrix.folders }}
 
     - name: linting      
-      run: npm run linting
+      run: npm run lint
       working-directory: ${{ matrix.folders }}
