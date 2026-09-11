@@ -1,0 +1,9 @@
+name: DEVSECOPS
+
+on:
+  push: 
+    branches: [master]
+
+jobs:
+  docker_push:
+    uses: ./.github/worflows/code_quality.yml

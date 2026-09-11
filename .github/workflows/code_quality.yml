@@ -1,0 +1,30 @@
+name: CODE QUALITY 
+
+on:
+  workflow_call:
+
+jobs:
+  code_quality:
+    runs-on: ubuntu-latest
+    strategy:
+      fast-fail: false
+      matrix:
+        folders: [frontend/main-app,frontend/solar-system,backend]
+    steps:
+    - name: code checkout
+      uses: actions/checkout@v7
+
+    - name: node setup
+      uses: actions/setup-node@v7
+      with:
+        node-version: '24'
+        cache: npm
+        cache-dependency-path: ${{ matrix.folders }}/package.json
+
+    - name: installing dependency
+      run: npm install
+      working-directory:  ${{ matrix.folders }}
+
+    - name: linting      
+      run: npm run linting
+      working-directory: ${{ matrix.folders }}
