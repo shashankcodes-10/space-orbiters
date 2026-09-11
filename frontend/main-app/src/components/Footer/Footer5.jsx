@@ -1,27 +1,26 @@
-import React from "react";
 import { FaFacebook, FaInstagram, FaLinkedin } from "react-icons/fa";
 import { HiLocationMarker } from "react-icons/hi";
 import { MdCall, MdMessage } from "react-icons/md";
 
 const Footer = () => {
   return (
-    <div className="bg-stone-950 ">
+    <div className="bg-stone-950">
       <section className="max-w-[1200px] mx-auto text-white">
-        <div className=" grid md:grid-cols-3 py-5">
+        <div className="grid md:grid-cols-3 py-5">
           {/* first column */}
-          <div className=" py-8 px-4 ">
+          <div className="py-8 px-4">
             <h1 className="sm:text-3xl text-xl font-bold sm:text-left text-justify mb-3">
               Be Ready To Grow
             </h1>
             <p className="text-red-400">
               Get exclusive{" "}
-              <span className=" text-white font-bold "> best update</span>{" "}
-              straight to your inbox.{" "}
+              <span className="text-white font-bold"> best update</span>{" "}
+              straight to your inbox.
             </p>
             <br />
             <div className="flex items-center h-10">
               <input
-                className="py-1 px-3 w-full h-[100%] inline-block focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500 bg-zinc-50 border-red-200 border-2 "
+                className="py-1 px-3 w-full h-[100%] inline-block focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500 bg-zinc-50 border-red-200 border-2"
                 type="text"
                 placeholder="Email"
               />
@@ -30,15 +29,15 @@ const Footer = () => {
               </button>
             </div>
           </div>
-          {/* Second column */}
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 col-span-2 md:pl-10 ">
-            <div className="">
-              <div className="py-8 px-4 ">
+          {/* Second column */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 col-span-2 md:pl-10">
+            <div>
+              <div className="py-8 px-4">
                 <h1 className="sm:text-xl text-xl font-bold sm:text-left text-justify mb-3">
                   Important Links
                 </h1>
-                <ul className={`flex flex-col gap-3 `}>
+                <ul className="flex flex-col gap-3">
                   <li className="cursor-pointer">Home</li>
                   <li className="cursor-pointer">About</li>
                   <li className="cursor-pointer">Services</li>
@@ -46,12 +45,13 @@ const Footer = () => {
                 </ul>
               </div>
             </div>
-            <div className="">
-              <div className="py-8 px-4 ">
+
+            <div>
+              <div className="py-8 px-4">
                 <h1 className="sm:text-xl text-xl font-bold sm:text-left text-justify mb-3">
                   Links
                 </h1>
-                <ul className="flex flex-col gap-3 ">
+                <ul className="flex flex-col gap-3">
                   <li className="cursor-pointer">Home</li>
                   <li className="cursor-pointer">About</li>
                   <li className="cursor-pointer">Services</li>
@@ -59,8 +59,9 @@ const Footer = () => {
                 </ul>
               </div>
             </div>
-            <div className="">
-              <div className="py-8 px-4 ">
+
+            <div>
+              <div className="py-8 px-4">
                 <h1 className="sm:text-xl text-xl font-bold sm:text-left text-justify mb-3">
                   Contact Us
                 </h1>
@@ -82,11 +83,13 @@ const Footer = () => {
             </div>
           </div>
         </div>
+
         <div className="hidden sm:block">
           <div className="flex justify-between items-center text-center py-6 border-t-2 border-gray-300/40">
             <span className="text-sm text-gray-400">
               @copyright 2024 || By Space Orbiters
             </span>
+
             <div className="flex items-center justify-center gap-4 mb-4">
               <a href="#">
                 <FaInstagram className="text-4xl" />
@@ -99,7 +102,7 @@ const Footer = () => {
               </a>
             </div>
 
-            <span className="text-sm text-gray-400 ">
+            <span className="text-sm text-gray-400">
               <ul className="flex gap-3">
                 <li className="hover:text-white">Privacy Policy</li>
                 <li className="hover:text-white">Terms & Conditions</li>

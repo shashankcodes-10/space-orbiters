@@ -1,4 +1,4 @@
-import React from 'react';
+import PropTypes from "prop-types";
 
 const EventDetail = ({ event }) => {
   if (!event) return null;
@@ -11,6 +11,15 @@ const EventDetail = ({ event }) => {
       <p className="text-gray-700">{event.DESCRIPTION}</p>
     </aside>
   );
+};
+
+EventDetail.propTypes = {
+  event: PropTypes.shape({
+    DATE: PropTypes.string,
+    IMAGE_LINK: PropTypes.string,
+    COUNTRY: PropTypes.string,
+    DESCRIPTION: PropTypes.string,
+  }),
 };
 
 export default EventDetail;

@@ -1,10 +1,14 @@
-// src/components/Filter.js
-import React from 'react';
+import PropTypes from "prop-types";
 
 const Filter = ({ onFilterChange }) => {
   return (
     <div className="mb-4">
-      <label htmlFor="filter" className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-400">Filter launches:</label>
+      <label
+        htmlFor="filter"
+        className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-400"
+      >
+        Filter launches:
+      </label>
       <input
         type="text"
         id="filter"
@@ -14,6 +18,10 @@ const Filter = ({ onFilterChange }) => {
       />
     </div>
   );
+};
+
+Filter.propTypes = {
+  onFilterChange: PropTypes.func.isRequired,
 };
 
 export default Filter;

@@ -1,4 +1,3 @@
-import React from "react";
 import MountainPng from "../../assets/moon-surface-hd.png";
 
 const Hero = () => {

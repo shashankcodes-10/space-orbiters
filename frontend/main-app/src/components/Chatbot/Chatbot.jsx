@@ -1,7 +1,7 @@
-import React, { useState } from "react";
 import ChatBot from "react-simple-chatbot";
 import { ThemeProvider } from "styled-components";
 import { useHistory } from "react-router-dom";
+import { useState } from "react";
 import ChtbotImg from "../../assets/chatbot.png";
 
 const theme = {
@@ -121,7 +121,7 @@ function Chatbot() {
   const [key, setKey] = useState(Math.random());
   const history = useHistory();
 
-  const handleEnd = ({ steps, values }) => {
+  const handleEnd = ({ values }) => {
     switch (values[values.length - 1]) {
       case "Home":
         history.push("/");
@@ -138,6 +138,7 @@ function Chatbot() {
       default:
         break;
     }
+
     setTimeout(() => {
       setKey(Math.random());
       setOpened(false);
@@ -157,7 +158,11 @@ function Chatbot() {
           avatarStyle={{ borderRadius: "100%" }}
           floating={true}
           floatingIcon={
-            <img src={ChtbotImg} style={{ width: "70%" }} alt="chatBot icon" />
+            <img
+              src={ChtbotImg}
+              style={{ width: "70%" }}
+              alt="chatBot icon"
+            />
           }
           floatingStyle={{
             backgroundColor: "#ffffff",

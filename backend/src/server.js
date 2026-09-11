@@ -18,12 +18,16 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const server = http.createServer(app);
 
-const allowedOrigin = process.env.FRONTEND_ORIGIN || "http://localhost:5173";
+const allowedOrigin =
+  process.env.FRONTEND_ORIGIN || "http://localhost:5173";
 
-app.use(cors({
-  origin: true,
-  credentials: true
-}));
+app.use(
+  cors({
+    origin: allowedOrigin,
+    credentials: true,
+  })
+);
+
 app.use(express.json());
 
 app.get("/", (req, res) => {
@@ -41,9 +45,9 @@ app.use("/chat", express.static(chatClientPath));
 
 const io = new Server(server, {
   cors: {
-    origin: true,
-    methods: ["GET", "POST"]
-  }
+    origin: allowedOrigin,
+    methods: ["GET", "POST"],
+  },
 });
 
 registerChat(io);

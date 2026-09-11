@@ -7,7 +7,6 @@ import {
   Image,
   Text,
   Environment,
-  Plane,
 } from "@react-three/drei";
 import { useRoute, useLocation } from "wouter";
 import { easing } from "maath";
@@ -47,9 +46,9 @@ PlanetAr.propTypes = {
     PropTypes.shape({
       position: PropTypes.arrayOf(PropTypes.number),
       rotation: PropTypes.arrayOf(PropTypes.number),
-      url: PropTypes.string,
+      url: PropTypes.string.isRequired,
     })
-  ),
+  ).isRequired,
 };
 
 function Frames({
@@ -61,8 +60,10 @@ function Frames({
   const clicked = useRef();
   const [, params] = useRoute("/item/:id");
   const [, setLocation] = useLocation();
+
   useEffect(() => {
     clicked.current = ref.current.getObjectByName(params?.id);
+
     if (clicked.current) {
       clicked.current.parent.updateWorldMatrix(true, true);
       clicked.current.parent.localToWorld(p.set(0, GOLDENRATIO / 2, 1.25));
@@ -72,10 +73,12 @@ function Frames({
       q.identity();
     }
   });
+
   useFrame((state, dt) => {
     easing.damp3(state.camera.position, p, 0.4, dt);
     easing.dampQ(state.camera.quaternion, q, 0.4, dt);
   });
+
   return (
     <group
       ref={ref}
@@ -88,13 +91,25 @@ function Frames({
       onPointerMissed={() => setLocation("/")}
     >
       {images.map(
-        (props) => <Frame key={props.url} {...props} /> /* prettier-ignore */
+        (props) => <Frame key={props.url} {...props} />
       )}
     </group>
   );
 }
 
-function Frame({ url, c = new THREE.Color(), ...props }) {
+Frames.propTypes = {
+  images: PropTypes.arrayOf(
+    PropTypes.shape({
+      position: PropTypes.arrayOf(PropTypes.number),
+      rotation: PropTypes.arrayOf(PropTypes.number),
+      url: PropTypes.string.isRequired,
+    })
+  ).isRequired,
+  q: PropTypes.instanceOf(THREE.Quaternion),
+  p: PropTypes.instanceOf(THREE.Vector3),
+};
+
+function Frame({ url, ...props }) {
   const image = useRef();
   const frame = useRef();
   const [, params] = useRoute("/item/:id");
@@ -102,10 +117,13 @@ function Frame({ url, c = new THREE.Color(), ...props }) {
   const [rnd] = useState(() => Math.random());
   const name = getUuid(url);
   const isActive = params?.id === name;
+
   useCursor(hovered);
+
   useFrame((state, dt) => {
     image.current.material.zoom =
       2 + Math.sin(rnd * 10000 + state.clock.elapsedTime / 3) / 2;
+
     easing.damp3(
       image.current.scale,
       [
@@ -116,6 +134,7 @@ function Frame({ url, c = new THREE.Color(), ...props }) {
       0.1,
       dt
     );
+
     easing.dampC(
       frame.current.material.color,
       hovered ? "orange" : "white",
@@ -123,6 +142,7 @@ function Frame({ url, c = new THREE.Color(), ...props }) {
       dt
     );
   });
+
   return (
     <group {...props}>
       <mesh
@@ -139,6 +159,7 @@ function Frame({ url, c = new THREE.Color(), ...props }) {
           roughness={0.5}
           envMapIntensity={2}
         />
+
         <mesh
           ref={frame}
           raycast={() => null}
@@ -148,6 +169,7 @@ function Frame({ url, c = new THREE.Color(), ...props }) {
           <boxGeometry />
           <meshBasicMaterial toneMapped={false} fog={false} />
         </mesh>
+
         <Image
           raycast={() => null}
           ref={image}
@@ -155,6 +177,7 @@ function Frame({ url, c = new THREE.Color(), ...props }) {
           url={url}
         />
       </mesh>
+
       <Text
         maxWidth={0.1}
         anchorX="left"
@@ -167,3 +190,7 @@ function Frame({ url, c = new THREE.Color(), ...props }) {
     </group>
   );
 }
+
+Frame.propTypes = {
+  url: PropTypes.string.isRequired,
+};

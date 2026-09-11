@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import  { useState, useEffect } from 'react';
 import { fetchPlanets } from '../services/api';
 import background from '../assets/background.png';
 

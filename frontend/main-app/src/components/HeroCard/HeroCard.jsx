@@ -1,4 +1,3 @@
-import React from "react";
 import wave from "../../assets/wave Gif.gif";
 
 import { FaReact } from "react-icons/fa";

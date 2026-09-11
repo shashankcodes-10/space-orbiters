@@ -1,7 +1,8 @@
 // src/components/Launches.js
-import React, { useState, useEffect } from 'react';
-import { fetchUpcomingLaunches } from '../services/api';
-import LaunchCard from './LaunchCard';
+import { useState, useEffect } from "react";
+import PropTypes from "prop-types";
+import { fetchUpcomingLaunches } from "../services/api";
+import LaunchCard from "./LaunchCard";
 
 const Launches = ({ filterText }) => {
   const [launches, setLaunches] = useState([]);
@@ -24,7 +25,7 @@ const Launches = ({ filterText }) => {
     fetchLaunchData();
   }, []);
 
-  const filteredLaunches = launches.filter(launch =>
+  const filteredLaunches = launches.filter((launch) =>
     launch.name.toLowerCase().includes(filterText.toLowerCase())
   );
 
@@ -34,12 +35,18 @@ const Launches = ({ filterText }) => {
   return (
     <div className="space-y-4">
       {filteredLaunches.length > 0 ? (
-        filteredLaunches.map((launch) => <LaunchCard key={launch.id} launch={launch} />)
+        filteredLaunches.map((launch) => (
+          <LaunchCard key={launch.id} launch={launch} />
+        ))
       ) : (
         <div>No launches match the filter criteria.</div>
       )}
     </div>
   );
+};
+
+Launches.propTypes = {
+  filterText: PropTypes.string.isRequired,
 };
 
 export default Launches;

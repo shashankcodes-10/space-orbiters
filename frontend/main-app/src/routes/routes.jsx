@@ -1,4 +1,3 @@
-import React from 'react'
 import {Route,Routes} from 'react-router-dom';
 import MainBodies from '../pages/MainBodies';
 import NasaImages from '../pages/NasaImages';

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import  { useState } from 'react';
 import TimelineVisualization from './TimelineVisualization';
 import EventDetail from './EventDetail';
 import FilterSlider from './FilterSlider';
