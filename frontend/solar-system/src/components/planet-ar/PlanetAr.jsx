@@ -21,6 +21,7 @@ export const PlanetAr = ({ images }) => (
     <fog attach="fog" args={["#191920", 0, 15]} />
     <group position={[0, -0.5, 0]}>
       <Frames images={images} />
+
       <mesh rotation={[-Math.PI / 2, 0, 0]}>
         <planeGeometry args={[50, 50]} />
         <MeshReflectorMaterial
@@ -37,6 +38,7 @@ export const PlanetAr = ({ images }) => (
         />
       </mesh>
     </group>
+
     <Environment preset="city" />
   </Canvas>
 );
@@ -90,9 +92,9 @@ function Frames({
       )}
       onPointerMissed={() => setLocation("/")}
     >
-      {images.map(
-        (props) => <Frame key={props.url} {...props} />
-      )}
+      {images.map(({ url, ...props }) => (
+        <Frame key={url} url={url} {...props} />
+      ))}
     </group>
   );
 }
@@ -115,6 +117,7 @@ function Frame({ url, ...props }) {
   const [, params] = useRoute("/item/:id");
   const [hovered, hover] = useState(false);
   const [rnd] = useState(() => Math.random());
+
   const name = getUuid(url);
   const isActive = params?.id === name;
 
@@ -153,6 +156,7 @@ function Frame({ url, ...props }) {
         position={[0, GOLDENRATIO / 2, 0]}
       >
         <boxGeometry />
+
         <meshStandardMaterial
           color="#151515"
           metalness={0.5}
@@ -194,3 +198,5 @@ function Frame({ url, ...props }) {
 Frame.propTypes = {
   url: PropTypes.string.isRequired,
 };
+
+export default PlanetAr;
