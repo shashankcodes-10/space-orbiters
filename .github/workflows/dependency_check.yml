@@ -1,10 +1,10 @@
-name: DEPENDENCY SCAN
+name: DEPENDENCY CHECK
 
 on:
   workflow_call:
 
 jobs:
-  dependency_scan:
+  dependency_check:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
