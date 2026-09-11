@@ -38,4 +38,4 @@ jobs:
         with:
           context: ${{ matrix.folder }}
           push: true
-          tags: ${{ vars.DOCKERHUB_USERNAME }}/${{ matrix.image }}-githubactions:latest
+          tags: ${{ vars.DOCKERHUB_USERNAME }}/${{ matrix.image }}-Actions:latest
