@@ -27,6 +27,6 @@ jobs:
         working-directory: ${{ matrix.folders}}
 
       - name: Run npm audit
-        run: npm audit 
+        run: npm audit --audit-level=high
         working-directory: ${{ matrix.folders}}
 
