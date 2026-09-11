@@ -6,4 +6,4 @@ on:
 
 jobs:
   docker_push:
-    uses: ./.github/worflows/code_quality.yml
+    uses: ./.github/workflows/code_quality.yml
