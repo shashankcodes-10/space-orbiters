@@ -1,6 +1,6 @@
 import ChatBot from "react-simple-chatbot";
 import { ThemeProvider } from "styled-components";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import ChtbotImg from "../../assets/chatbot.png";
 
@@ -58,7 +58,7 @@ const steps = [
   {
     id: "angry",
     message:
-      "😐 Oops, Did i do something wrong....But wait i am a bot i can't do that..🤥.  Well i suggest you to relax your mind, play some games,  watch some movies  and eat a lot of healthy tasty food just like me..😝",
+      "😐 Oops, Did i do something wrong....But wait i am a bot i can't do that..🤥. Well i suggest you to relax your mind, play some games, watch some movies and eat a lot of healthy tasty food just like me..😝",
     trigger: "help",
   },
   {
@@ -119,21 +119,21 @@ const steps = [
 function Chatbot() {
   const [opened, setOpened] = useState(false);
   const [key, setKey] = useState(Math.random());
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const handleEnd = ({ values }) => {
     switch (values[values.length - 1]) {
       case "Home":
-        history.push("/");
+        navigate("/");
         break;
       case "Planets":
-        history.push("/planet");
+        navigate("/planet");
         break;
       case "Spacecrafts":
-        history.push("/spacecrafts");
+        navigate("/spacecrafts");
         break;
       case "About Us":
-        history.push("/about");
+        navigate("/about");
         break;
       default:
         break;
