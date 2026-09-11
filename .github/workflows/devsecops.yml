@@ -5,7 +5,7 @@ on:
     branches: [master]
 
 jobs:
-  docker_push:
+  code_quality:
     uses: ./.github/workflows/code_quality.yml
 
   secret_scanning:
@@ -20,3 +20,7 @@ jobs:
 
   code_test:
     uses:  ./.github/workflows/code_test.yml   
+
+  docker_push:
+    uses:  ./.github/workflows/docker_push.yml     
+    secrets: inherit
