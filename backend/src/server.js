@@ -54,6 +54,8 @@ registerChat(io);
 
 const PORT = Number(process.env.PORT || 3000);
 
+export { app, server, start };
+
 async function start() {
   try {
     await pool.query("SELECT 1");
@@ -69,4 +71,4 @@ async function start() {
   }
 }
 
-start();
+
