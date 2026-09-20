@@ -1,0 +1,13 @@
+kind: Service
+apiVersion: v1
+
+metadata:
+  name: frontend-mainapp-service
+  namespace: space
+spec:
+  selector:
+    app: main-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80  
