@@ -1,0 +1,13 @@
+kind: Service
+apiVersion: v1
+
+metadata:
+  name: frontend-solarapp-service
+  namespace: space
+spec:
+  selector:
+    app: solar-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80  
