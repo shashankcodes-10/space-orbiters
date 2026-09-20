@@ -1,8 +1,7 @@
 name: DEVSECOPS
 
 on:
-  push: 
-    branches: [master]
+  worlflow_dispatch:
 
 jobs:
   code_quality:
