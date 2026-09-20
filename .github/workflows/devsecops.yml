@@ -1,7 +1,7 @@
 name: DEVSECOPS
 
 on:
-  worlflow_dispatch:
+  workflow_dispatch:
 
 jobs:
   code_quality:
