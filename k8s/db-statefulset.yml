@@ -33,10 +33,11 @@ spec:
                 name: space-secret
             - configMapRef:
                 name: space-configmap
-
           volumeMounts:
             - name: postgres-storage
               mountPath: /var/lib/postgresql/data
+            - name: postgres-init
+              mountPath: /docker-entrypoint-initdb.d  
 
           resources:
             requests:
@@ -65,7 +66,11 @@ spec:
             periodSeconds: 10
             timeoutSeconds: 2
             failureThreshold: 3
-     
+      
+      volumes:
+       - name: postgres-init
+         configMap:
+            name: postgres-init
 
   volumeClaimTemplates:
     - metadata:
