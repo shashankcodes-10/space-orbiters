@@ -1,0 +1,13 @@
+kind: Service
+apiVersion: v1
+
+metadata:
+  name: postgres
+  namespace: space
+spec:
+  selector:
+    app: space-db
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432
