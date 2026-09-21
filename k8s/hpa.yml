@@ -1,0 +1,146 @@
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: backend-hpa
+  namespace: space
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: backend-space-app
+  minReplicas: 1
+  maxReplicas: 3
+
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 10
+      policies:
+        - type: Pods
+          value: 3
+          periodSeconds: 10
+
+    scaleDown:
+      stabilizationWindowSeconds: 20
+      policies:
+        - type: Pods
+          value: 2
+          periodSeconds: 10
+
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 20
+
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: mainapp-hpa
+  namespace: space
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: frontend-mainapp
+  minReplicas: 1
+  maxReplicas: 3
+
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 10
+      policies:
+        - type: Pods
+          value: 3
+          periodSeconds: 10
+
+    scaleDown:
+      stabilizationWindowSeconds: 20
+      policies:
+        - type: Pods
+          value: 2
+          periodSeconds: 10
+
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 20
+
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: solarapp-hpa
+  namespace: space
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: frontend-solarapp
+  minReplicas: 1
+  maxReplicas: 3
+
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 10
+      policies:
+        - type: Pods
+          value: 3
+          periodSeconds: 10
+
+    scaleDown:
+      stabilizationWindowSeconds: 20
+      policies:
+        - type: Pods
+          value: 2
+          periodSeconds: 10
+
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 20
+
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: chatapp-hpa
+  namespace: space
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: frontend-chatapp
+  minReplicas: 1
+  maxReplicas: 3
+
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 10
+      policies:
+        - type: Pods
+          value: 3
+          periodSeconds: 10
+
+    scaleDown:
+      stabilizationWindowSeconds: 20
+      policies:
+        - type: Pods
+          value: 2
+          periodSeconds: 10
+
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 20
