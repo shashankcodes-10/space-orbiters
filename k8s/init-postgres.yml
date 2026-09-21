@@ -1,0 +1,45 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-init
+  namespace: space
+data:
+  01_schema.sql: |
+    CREATE TABLE IF NOT EXISTS users (
+        id SERIAL PRIMARY KEY,
+        username VARCHAR(100) NOT NULL UNIQUE,
+        email VARCHAR(255) UNIQUE,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE TABLE IF NOT EXISTS planets (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(100) NOT NULL UNIQUE,
+        description TEXT NOT NULL DEFAULT '',
+        created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE TABLE IF NOT EXISTS messages (
+        id BIGSERIAL PRIMARY KEY,
+        user_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
+        message TEXT NOT NULL,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_messages_created_at
+        ON messages(created_at);
+
+    CREATE INDEX IF NOT EXISTS idx_messages_user_id
+        ON messages(user_id);
+
+  02_seed.sql: |
+    INSERT INTO planets (name, description) VALUES
+        ('Mercury', 'The smallest planet and the closest planet to the Sun.'),
+        ('Venus', 'A hot, rocky planet with a thick atmosphere.'),
+        ('Earth', 'Our home planet and the only known world with life.'),
+        ('Mars', 'A cold, rocky world known as the Red Planet.'),
+        ('Jupiter', 'The largest planet in the Solar System.'),
+        ('Saturn', 'A gas giant famous for its extensive ring system.'),
+        ('Uranus', 'An ice giant with a strongly tilted axis of rotation.'),
+        ('Neptune', 'A distant ice giant with powerful winds.')
+    ON CONFLICT (name) DO NOTHING;
